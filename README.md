@@ -1,81 +1,91 @@
-# 🧠 MemoryMeld Application Documentation
+# 🧠 MemoryMeld – Personal Memory Tracker
 
-## 1. Introduction
-MemoryMeld is a full-stack application that allows users to save and manage personal memories. Each memory is tagged using AI (OpenAI GPT API), and users can log in, register, save memories, and view their personal memory list. The app is built using Angular for the frontend and Node.js, Express, MySQL for the backend, with JWT-based authentication.
+MemoryMeld is a full-stack web application that enables users to securely store and organize their personal memories. Each memory is auto-tagged using the OpenAI API to improve searchability and organization. The app uses Angular for the frontend, Node.js and Express for the backend, and MySQL for data storage.
 
-## 2. Technologies Used
-- Angular (Frontend)
-- Node.js with Express (Backend)
-- MySQL (Database)
-- OpenAI API (for tag generation)
-- JWT for authentication
+---
+> 🔑 **Note**: You must obtain your own OpenAI API key from [https://platform.openai.com/account/api-keys](https://platform.openai.com/account/api-keys) and add it to the `.env` file:
 
-## 3. Backend Code Breakdown
+```env
+OPENAI_API_KEY=your_openai_key_here
 
-### 🔐 Auth Middleware (`authMiddleware.js`)
-- Extracts JWT from the Authorization header.
-- Verifies token and sets `req.user` for downstream use.
+## 🔧 Step 1: Clone the Repository
 
-### 🔐 `auth.js`
-- `POST /register`: Registers a new user. Hashes password with bcrypt.
-- `POST /login`: Authenticates a user and returns a signed JWT containing `userId`.
+```bash
+git clone https://github.com/abhinavkeesari/memorymeld.git
+cd memorymeld
+```
 
-### 🧠 `memory.js`
-- `POST /api/memory`: Saves memory to DB with `userId` from token, calls OpenAI to get tags.
-- `GET /api/memory`: Fetches only that user's memories based on token's `userId`.
+---
 
-## 4. Frontend Code Breakdown
+## 🖥️ Step 2: Set Up the Backend
 
-### 📦 `MemoryService (memory.service.ts)`
-- `saveMemory()`: Sends POST request with token.
-- `getAllMemories()`: Sends GET request with token.
+```bash
+cd memorymeld-backend
+npm install
+```
 
-### 🧭 `AppRoutingModule (app-routing.module.ts)`
-- Routes for login, register, dashboard.
+Create a `.env` file in the `memorymeld-backend` directory with the following content:
 
-### 🔒 AuthGuard
-- Prevents navigation if user is not authenticated (checks `localStorage` for token).
+```env
+DB_HOST=localhost
+DB_USER=your_mysql_username
+DB_PASSWORD=your_mysql_password
+DB_NAME=memorymeld
+JWT_SECRET=your_jwt_secret
+OPENAI_API_KEY=your_openai_key
+```
 
-### 📝 `MemoryFormComponent`
-- Provides form to submit new memory.
+Create the MySQL database:
 
-### 📋 `MemoryListComponent`
-- Displays user's memory list.
+```sql
+CREATE DATABASE memorymeld;
 
-## 5. JWT Authentication Flow
+-- Create 'users' table
+CREATE TABLE users (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  email VARCHAR(255) UNIQUE NOT NULL,
+  password VARCHAR(255) NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
 
-1. User logs in.
-2. Server sends a JWT with `userId` in payload.
-3. Angular stores this token in `localStorage`.
-4. All requests to backend use this token in `Authorization` header.
-5. Backend verifies and extracts `userId` using auth middleware.
-6. Only user-specific data is fetched/stored.
+-- Create 'memories' table
+CREATE TABLE memories (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  user_id INT NOT NULL,
+  content TEXT NOT NULL,
+  tags TEXT,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
 
-## 6. OpenAI GPT Integration
+```
 
-- When a user submits a memory, OpenAI is prompted to generate suitable tags based on memory content.
-- Tags are stored in the DB with the memory.
-- This enhances search and filtering capabilities (future implementation).
+Start the backend server:
 
-## 7. Current Status
+```bash
+node index.js
+```
 
-- ✅ Login and registration with JWT auth - DONE
-- ✅ Memory saving and retrieval per user - DONE
-- ✅ Frontend routing and guards - DONE
-- ✅ Integration with OpenAI GPT - DONE
-- ✅ Logout implemented - DONE
-- 🔜 Upcoming: Memory deletion, editing, filtering, profile view
+> Backend runs at: `http://localhost:3000`
 
-## memorymeld-frontend
+---
 
-The frontend of the MemoryMeld application is built using Angular and provides a clean, user-friendly interface for users to register, log in, and manage their personal memories. It communicates with a Node.js/Express backend via secure RESTful APIs, using JWT for authentication.
+## 🌐 Step 3: Set Up the Frontend
 
-### Key Features:
-- User registration and login functionality
-- Secure token storage using `localStorage`
-- Memory creation with automatic AI-generated tags (via OpenAI API)
-- Personalized memory dashboard displaying user-specific notes
-- Route protection using Angular guards
-- Modular codebase with services and guards for clean separation of concerns
+```bash
+cd ../memorymeld-frontend
+npm install
+ng serve
+```
 
-This Angular app handles all user interaction and ensures authenticated users can view, save, and manage their memories seamlessly.
+> Frontend runs at: `http://localhost:4200`
+
+---
+
+## 🚀 Future Enhancements
+
+- ✏️ Edit and delete memory entries  
+- 🔍 Search and filter memories by tags or date  
+- 📊 Dashboard for memory insights  
+- 📁 Support for image or file attachments  
+- 🧩 Multi-user collaboration and sharing features
