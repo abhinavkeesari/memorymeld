@@ -1,0 +1,7 @@
+<div *ngFor="let memory of memories" class="memory-card">
+  <h3>{{ memory.type | titlecase }}</h3>
+  <p><strong>Content:</strong> {{ memory.content }}</p>
+  <p><strong>Tags:</strong> {{ memory.tags }}</p>
+  <p><em>{{ memory.created_at | date:'medium' }}</em></p>
+  <hr />
+</div>

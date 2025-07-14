@@ -1,0 +1,9 @@
+<form (ngSubmit)="submitMemory()">
+  <textarea [(ngModel)]="memoryContent" name="content" required></textarea>
+  <select [(ngModel)]="memoryType" name="type">
+    <option value="note">Note</option>
+    <option value="link">Link</option>
+    <option value="code">Code</option>
+  </select>
+  <button type="submit">Save Memory</button>
+</form>
